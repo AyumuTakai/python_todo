@@ -1,27 +1,14 @@
 """
-TODOアプリ
+STEP 10 : GUI
 
-TkinterによるGUI版
-
-リスト: 使用
-辞書: 使用
-タプル: 使用
-条件分岐: 使用
-繰り返し: 使用
-組み込みライブラリ: 使用
-f文字列: 使用
-enumerate: 使用
-with: 使用
-__main__: 使用
-関数: 使用
-デフォルト引数: 使用
+10-01. TkinterによるGUIアプリ開発
 """
 
 # 組込みGUIライブラリのインポート
 import tkinter
 
 # コンソール版の関数をインポート
-from todo import load_tasks, add_task, done_task, remove_task
+from sample.todo import load_tasks, add_task, done_task, remove_task
 
 #
 # GUI用関数
@@ -47,7 +34,8 @@ def add_task_handler(entry, frame, tasks):
         frame (widget): タスクリスト表示コンテナ
         tasks (list, optional): タスクリスト. Defaults to tasks.
     """
-    task = entry.get()
+    task = entry.get()  # 入力値を取得する
+    entry.delete(0, tkinter.END)  # 入力欄を空にする
     add_task(tasks, {"task": task, "done": False})
     reload_tasks(frame, tasks)
 

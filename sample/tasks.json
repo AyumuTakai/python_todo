@@ -1,0 +1,5 @@
+[
+    {"task": "日報を作成する", "done": true},
+    {"task": "メールをチェックする", "done": false},
+    {"task": "コーヒーを買ってくる", "done": false}
+]
