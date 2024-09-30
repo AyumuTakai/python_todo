@@ -206,6 +206,8 @@ tasks-sample.jsonをtasks.jsonとして複製して使用する。
     * writeメソッド
     * datetimeパッケージ
 
+* タスクの編集機能
+
 # 検討事項
 
 ## 関数化のタイミング
