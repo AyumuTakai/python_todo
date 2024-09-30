@@ -74,6 +74,7 @@ while True:
         break
     elif command in ["add", "a"]:
         task = input("追加するタスクを入力してください : ")
+        add_task(tasks, task)
         print("タスクを追加しました")
     else:
         index = int(command) - 1
