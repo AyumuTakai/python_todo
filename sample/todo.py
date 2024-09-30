@@ -1,53 +1,33 @@
 """
-TODOアプリ
+STEP 09 : 例外処理
 
-コンソール版完成
-
-リスト: 使用
-辞書: 使用
-タプル: 使用
-条件分岐: 使用
-繰り返し: 使用
-組み込みライブラリ: 使用
-f文字列: 使用
-enumerate: 使用
-with: 使用
-__main__: 使用
-関数: 使用
-デフォルト引数: 使用
+09-01. 型変換の例外処理
 """
 
-# JSON形式の読み込み、書き込みライブラリ
 import json
 
-datafile = "tasks.json"  # タスクデータファイルパス
-tasks = []  # タスクリスト
+#
+# データ操作関数
+#
 
 
-def load_tasks(datafile=datafile):
+def load_tasks():
     """タスクリストをファイルから読み込む
-
-    Args:
-        datafile (str, optional): ファイルパス. Defaults to datafile.
 
     Returns:
         list: タスクリスト
     """
-    try:
-        with open(datafile, "r", encoding="utf-8") as f:
-            tasks = json.load(f)
-    except Exception:
-        return []  # エラーが発生したら空のタスクリストを返す
+    with open("tasks.json", "r", encoding="utf-8") as f:
+        tasks = json.load(f)
     return tasks
 
 
-def save_tasks(tasks, datafile=datafile):
+def save_tasks(tasks):
     """タスクリストをファイルに保存
     Args:
         tasks (list): タスクリスト. Defaults to tasks.
-        datafile (str, optional): ファイルパス. Defaults to datafile.
     """
-    with open(datafile, "w", encoding="utf-8") as f:
+    with open("tasks.json", "w", encoding="utf-8") as f:
         json.dump(tasks, f)
 
 
@@ -56,9 +36,10 @@ def add_task(tasks, task):
 
     Args:
         tasks (list): タスクリスト. Defaults to tasks.
-        task (dict): 追加するタスク
+        task (str): 追加するタスク
     """
-    tasks.append(task)
+    tasks.append({"task": task, "done": False})
+    # ファイルへ保存
     save_tasks(tasks)
 
 
@@ -66,10 +47,11 @@ def done_task(tasks, index):
     """タスク完了処理と保存
 
     Args:
-        tasks (list): タスクリスト. Defaults to tasks.
+        tasks (list): タスクリスト
         index (int): タスクインデックス
     """
     tasks[index]["done"] = True
+    # ファイルへ保存
     save_tasks(tasks)
 
 
@@ -77,89 +59,119 @@ def remove_task(tasks, index):
     """タスク削除と保存
 
     Args:
-        tasks (list): タスクリスト. Defaults to tasks.
+        tasks (list): タスクリスト
         index (int): タスクインデックス
     """
     tasks.pop(index)
+    # ファイルへ保存
     save_tasks(tasks)
 
 
+#
+# 画面表示関数
+#
+
+
 def display_tasks(tasks):
-    """タスク一覧をコンソールに表示
+    """タスク一覧とコマンド一覧をコンソールに表示
 
     Args:
-        tasks (list, optional): タスクリスト. Defaults to tasks.
+        tasks (list): タスクリスト
     """
-    print("=" * 30, "TODO", "=" * 30)  # 上罫線
+    # 画面表示
+    print("============================== TODO ==============================")
     for i, task in enumerate(tasks):
-        print(i + 1, task["task"], end="")
         if task["done"]:
-            print("/ 完了", end="")
-        print()  # 改行だけおこなう
-    print("=" * 66)  # 下罫線
+            status = "/ 完了"
+        else:
+            status = ""
+        print(i + 1, task["task"], status)
+    print("==================================================================")
+    # タスクの個数を得る
+    n = len(tasks)
+    if n > 0:
+        print(f"1 ~ {n} : タスクを選択")
+    print("add : タスクを追加")
+    print("quit : 終了")
+    print("------------------------------------------------------------------")
 
 
-def display_commands(tasks):
-    """コマンド一覧をコンソールに表示
+def sub_command(tasks, index):
+    """タスクを選択してからのサブコマンド処理
 
     Args:
-        tasks (list, optional): タスクリスト. Defaults to tasks.
+        tasks (list): タスクリスト
+        index (int): タスクインデックス
     """
-    print("add : タスクを追加 / quit: 終了")
-    print(f"1 ~ {len(tasks)} : タスクを選択")
-    print("-" * 66)
+    if 0 <= index < len(tasks):
+        print(index + 1, tasks[index]["task"], "を選択しました")
+        print()
+        print("done: タスクの完了")
+        print("remove: タスクの削除")
+        print("cancel: 選択のキャンセル")
+        print("------------------------------------------------------------------")
+
+        # サブコマンドの入力
+        subcommand = input("コマンド(頭文字でも可)を入力してください : ")
+
+        # サブコマンド処理
+        if subcommand in ["done", "d"]:
+            done_task(tasks, index)
+            print("タスクを完了しました")
+        elif subcommand in ["remove", "r"]:
+            remove_task(tasks, index)
+            print("タスクを削除しました")
+        # doneとremove以外は何もしないで次のループへ
+        return False
+    else:
+        return True
 
 
-def main_command(tasks, command):
+def main_command(tasks):
     """メインコマンド処理
     Args:
-        command (str): 入力されたコマンド文字列 "add","a","quit","q"
+        tasks (list): タスクリスト
 
     Returns:
-        bool: 処理を継続するならTrue, 終了するならFalse
+        bool: 処理を継続するならFalse, 終了するならTrue
     """
-    if command in ("add", "a"):
-        task = input("タスクを入力してください : ")
-        add_task(tasks, {"task": task, "done": False})
-        print("タスクを追加しました")
-    elif command in ("quit", "q"):
-        print("終了しました")
-        return False  # プログラムを終了する場合はFalseを返す
+    # タスクの個数を得る
+    n = len(tasks)
+    if n > 0:
+        message = f"コマンド(頭文字でも可)または1 ~ {n}の数字を入力してください : "
     else:
-        sub_command(tasks, command)
-    return True  # 処理を継続する場合はTrueを返す
+        message = "コマンド(頭文字でも可)を入力してください : "
 
+    command = input(message)
 
-def sub_command(tasks, command):
-    """タスクを選択してからのコマンド処理
-
-    Args:
-        command (str): 入力されたコマンド文字列
-    """
-    try:
-        no = int(command)
-        if 0 <= no <= len(tasks):
-            print(no, "番のタスクを選択しました")
-            print("done : タスクを完了 / remove: タスクを削除")
-            command = input("コマンドを入力してください : ")
-            if command in ("done", "d"):
-                done_task(tasks, no - 1)
-                print("タスクを完了しました")
-            elif command in ("remove", "r"):
-                remove_task(tasks, no - 1)
-                print("タスクを削除しました")
-    except ValueError:
-        print("数値またはコマンドを入力してください")
+    # コマンド処理
+    if command in ["quit", "q"]:
+        print("終了しました")
+        return True
+    elif command in ["add", "a"]:
+        task = input("追加するタスクを入力してください : ")
+        add_task(tasks, task)
+        print("タスクを追加しました")
+    else:
+        try:
+            index = int(command) - 1
+            if sub_command(tasks, index):
+                print(command, "を入力しました")
+        except Exception:
+            print(command, "を入力しました")
+    return False
 
 
 if __name__ == "__main__":
-    # タスクリストの読み込み
+    # データの読み込み
     tasks = load_tasks()
 
-    # メインループ
+    # メインループの開始
     while True:
+        # タスク表示
         display_tasks(tasks)
-        display_commands(tasks)
-        command = input(f"コマンドまたは1 ~ {len(tasks)}の数字を入力してください : ")
-        if not main_command(tasks, command):
+        # コマンド入力
+        if main_command(tasks):
             break
+        # 空の行を出力
+        print()

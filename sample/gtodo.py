@@ -47,7 +47,8 @@ def add_task_handler(entry, frame, tasks):
         frame (widget): タスクリスト表示コンテナ
         tasks (list, optional): タスクリスト. Defaults to tasks.
     """
-    task = entry.get()
+    task = entry.get()  # 入力値を取得する
+    entry.delete(0, tkinter.END)  # 入力欄を空にする
     add_task(tasks, {"task": task, "done": False})
     reload_tasks(frame, tasks)
 
@@ -82,9 +83,9 @@ def task_widget(frame, index, task):
     label.pack(side=tkinter.LEFT, fill=tkinter.X, expand=1)
     remove_btn = tkinter.Button(
         row,
-        text="🗑️",
-        foreground="#f00",
+        text="×",
         command=lambda: remove_task_handler(frame, tasks, index),
+        bg=bg
     )
     remove_btn.pack(side=tkinter.RIGHT)
     done_btn = tkinter.Button(
