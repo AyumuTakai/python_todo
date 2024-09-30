@@ -1,7 +1,7 @@
 """
-STEP 08 : 関数
+STEP 08 : ファイル入出力
 
-08-02. 画面表示を関数にする
+08-02. データの書き込みを関数にする
 """
 
 import json
@@ -16,29 +16,24 @@ def load_tasks():
         tasks = json.load(f)
     return tasks
 
-
 def save_tasks(tasks):
     with open("tasks.json", "w", encoding="utf-8") as f:
         json.dump(tasks, f)
-
 
 def add_task(tasks, task):
     tasks.append({"task": task, "done": False})
     # ファイルへ保存
     save_tasks(tasks)
 
-
 def done_task(tasks, index):
     tasks[index]["done"] = True
     # ファイルへ保存
     save_tasks(tasks)
 
-
 def remove_task(tasks, index):
     tasks.pop(index)
     # ファイルへ保存
     save_tasks(tasks)
-
 
 #
 # 画面表示関数
@@ -64,6 +59,36 @@ def display_tasks(tasks):
     print("------------------------------------------------------------------")
 
 
+#
+# コマンド処理関数
+#
+
+
+def sub_command(tasks, index):
+    if 0 <= index < len(tasks):
+        print(index + 1, tasks[index]["task"], "を選択しました")
+        print()
+        print("done: タスクの完了")
+        print("remove: タスクの削除")
+        print("cancel: 選択のキャンセル")
+        print("------------------------------------------------------------------")
+
+        # サブコマンドの入力
+        subcommand = input("コマンド(頭文字でも可)を入力してください : ")
+
+        # サブコマンド処理
+        if subcommand in ["done", "d"]:
+            done_task(tasks, index)
+            print("タスクを完了しました")
+        elif subcommand in ["remove", "r"]:
+            remove_task(tasks, index)
+            print("タスクを削除しました")
+        # doneとremove以外は何もしないで次のループへ
+        return False
+    else:
+        return True
+
+
 def main_command(tasks):
     # タスクの個数を得る
     n = len(tasks)
@@ -84,38 +109,21 @@ def main_command(tasks):
         print("タスクを追加しました")
     else:
         index = int(command) - 1
-        if 0 <= index < len(tasks):
-            print(index + 1, tasks[index]["task"], "を選択しました")
-            print()
-            print("done: タスクの完了")
-            print("remove: タスクの削除")
-            print("cancel: 選択のキャンセル")
-            print("------------------------------------------------------------------")
-
-            # サブコマンドの入力
-            subcommand = input("コマンド(頭文字でも可)を入力してください : ")
-
-            # サブコマンド処理
-            if subcommand in ["done", "d"]:
-                done_task(tasks, index)
-                print("タスクを完了しました")
-            elif subcommand in ["remove", "r"]:
-                remove_task(tasks, index)
-                print("タスクを削除しました")
-            # doneとremove以外は何もしないで次のループへ
-
-        else:
+        if sub_command(tasks, index):
             print(command, "を入力しました")
     return False
 
 
-tasks = load_tasks()
+if __name__ == "__main__":
+    # データの読み込み
+    tasks = load_tasks()
 
-while True:
-    # タスク表示
-    display_tasks(tasks)
-    # コマンド入力
-    if main_command(tasks):
-        break
-    # 空の行を出力
-    print()
+    # メインループの開始
+    while True:
+        # タスク表示
+        display_tasks(tasks)
+        # コマンド入力
+        if main_command(tasks):
+            break
+        # 空の行を出力
+        print()

@@ -1,15 +1,28 @@
 """
-STEP 01 : ファイル入出力
+STEP 07 : 関数
 
-07-01. JSON形式のデータファイルを読み込む
+07-01. データの読み書きを関数にする
 """
 
-import json
+#
+# データ操作
+#
 
-tasks = []
+def add_task(tasks, task):
+    tasks.append({"task": task, "done": False})
 
-with open("tasks.json", "r", encoding="utf-8") as f:
-    tasks = json.load(f)
+def done_task(tasks, index):
+    tasks[index]["done"] = True
+
+
+def remove_task(tasks, index):
+    tasks.pop(index)
+
+tasks = tasks = [
+    {"task": "日報を作成する", "done": True},
+    {"task": "メールをチェックする", "done": False},
+    {"task": "コーヒーを買ってくる", "done": False},
+]
 
 while True:
     # 画面表示
@@ -43,7 +56,7 @@ while True:
         break
     elif command in ["add", "a"]:
         task = input("追加するタスクを入力してください : ")
-        tasks.append({"task": task, "done": False})
+        add_task(tasks, task)
         print("タスクを追加しました")
     else:
         index = int(command) - 1
@@ -60,9 +73,10 @@ while True:
 
             # サブコマンド処理
             if subcommand in ["done", "d"]:
-                tasks[index]["done"] = True
+                done_task(tasks, index)
+                print("タスクを完了しました")
             elif subcommand in ["remove", "r"]:
-                tasks.pop(index)
+                remove_task(tasks, index)
                 print("タスクを削除しました")
             # doneとremove以外は何もしないで次のループへ
 

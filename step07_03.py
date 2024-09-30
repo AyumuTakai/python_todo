@@ -1,43 +1,24 @@
 """
-STEP 08 : 関数
+STEP 07 : 関数
 
-08-03. コマンド処理関数を分割する
+07-03. コマンド処理関数を分割する
 """
-
-import json
 
 #
 # データ操作関数
 #
 
 
-def load_tasks():
-    with open("tasks.json", "r", encoding="utf-8") as f:
-        tasks = json.load(f)
-    return tasks
-
-
-def save_tasks(tasks):
-    with open("tasks.json", "w", encoding="utf-8") as f:
-        json.dump(tasks, f)
-
-
 def add_task(tasks, task):
     tasks.append({"task": task, "done": False})
-    # ファイルへ保存
-    save_tasks(tasks)
 
 
 def done_task(tasks, index):
     tasks[index]["done"] = True
-    # ファイルへ保存
-    save_tasks(tasks)
 
 
 def remove_task(tasks, index):
     tasks.pop(index)
-    # ファイルへ保存
-    save_tasks(tasks)
 
 
 #
@@ -62,6 +43,11 @@ def display_tasks(tasks):
     print("add : タスクを追加")
     print("quit : 終了")
     print("------------------------------------------------------------------")
+
+
+#
+# コマンド処理関数
+#
 
 
 def sub_command(tasks, index):
@@ -115,8 +101,11 @@ def main_command(tasks):
 
 
 if __name__ == "__main__":
-    # データの読み込み
-    tasks = load_tasks()
+    tasks = [
+        {"task": "日報を作成する", "done": True},
+        {"task": "メールをチェックする", "done": False},
+        {"task": "コーヒーを買ってくる", "done": False},
+    ]
 
     # メインループの開始
     while True:

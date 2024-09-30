@@ -1,17 +1,32 @@
 """
-STEP 01 : ファイル入出力
+STEP 07 : 関数
 
-07-02. JSON形式のデータファイルに保存する
+07-02. 画面表示とコマンド入力処理を関数にする
 """
 
-import json
+#
+# データ操作関数
+#
 
-tasks = []
 
-with open("tasks.json", "r", encoding="utf-8") as f:
-    tasks = json.load(f)
+def add_task(tasks, task):
+    tasks.append({"task": task, "done": False})
 
-while True:
+
+def done_task(tasks, index):
+    tasks[index]["done"] = True
+
+
+def remove_task(tasks, index):
+    tasks.pop(index)
+
+
+#
+# 画面表示関数
+#
+
+
+def display_tasks(tasks):
     # 画面表示
     print("============================== TODO ==============================")
     for i, task in enumerate(tasks):
@@ -29,7 +44,15 @@ while True:
     print("quit : 終了")
     print("------------------------------------------------------------------")
 
-    # コマンド入力
+
+#
+# コマンド処理関数
+#
+
+
+def main_command(tasks):
+    # タスクの個数を得る
+    n = len(tasks)
     if n > 0:
         message = f"コマンド(頭文字でも可)または1 ~ {n}の数字を入力してください : "
     else:
@@ -40,13 +63,10 @@ while True:
     # コマンド処理
     if command in ["quit", "q"]:
         print("終了しました")
-        break
+        return True
     elif command in ["add", "a"]:
         task = input("追加するタスクを入力してください : ")
-        tasks.append({"task": task, "done": False})
-        # ファイルへ保存
-        with open("tasks.json", "w", encoding="utf-8") as f:
-            json.dump(tasks, f)
+        add_task(tasks, task)
         print("タスクを追加しました")
     else:
         index = int(command) - 1
@@ -63,20 +83,29 @@ while True:
 
             # サブコマンド処理
             if subcommand in ["done", "d"]:
-                tasks[index]["done"] = True
-                # ファイルへ保存
-                with open("tasks.json", "w", encoding="utf-8") as f:
-                    json.dump(tasks, f)
+                done_task(tasks, index)
+                print("タスクを完了しました")
             elif subcommand in ["remove", "r"]:
-                tasks.pop(index)
+                remove_task(tasks, index)
                 print("タスクを削除しました")
-                # ファイルへ保存
-                with open("tasks.json", "w", encoding="utf-8") as f:
-                    json.dump(tasks, f)
             # doneとremove以外は何もしないで次のループへ
 
         else:
             print(command, "を入力しました")
+    return False
 
+
+tasks = [
+    {"task": "日報を作成する", "done": True},
+    {"task": "メールをチェックする", "done": False},
+    {"task": "コーヒーを買ってくる", "done": False},
+]
+
+while True:
+    # タスク表示
+    display_tasks(tasks)
+    # コマンド入力
+    if main_command(tasks):
+        break
     # 空の行を出力
     print()
