@@ -7,8 +7,8 @@ STEP 10 : GUI
 # 組込みGUIライブラリのインポート
 import tkinter
 
-# コンソール版の関数をインポート
-from sample.todo import load_tasks, add_task, done_task, remove_task
+# step09_01からデータ処理のための関数をインポート
+from step09_01 import load_tasks, add_task, done_task, remove_task
 
 #
 # GUI用関数
@@ -36,7 +36,7 @@ def add_task_handler(entry, frame, tasks):
     """
     task = entry.get()  # 入力値を取得する
     entry.delete(0, tkinter.END)  # 入力欄を空にする
-    add_task(tasks, {"task": task, "done": False})
+    add_task(tasks, task)
     reload_tasks(frame, tasks)
 
 
